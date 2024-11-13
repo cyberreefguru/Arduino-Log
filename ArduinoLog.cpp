@@ -137,6 +137,17 @@ void Logging::print(const __FlashStringHelper *format, va_list args)
 
 void Logging::print(const char *format, va_list args)
 {
+	// Serial.printf("Logging::printFormat - %s\n", format);
+    // va_list ap_copy;
+    // va_copy(ap_copy, args);
+    // uint32_t len = vsnprintf(NULL, 0, format, ap_copy);
+    // va_end(ap_copy);
+    vsnprintf(pbuf, 512, format, args);
+	_logOutput->print(pbuf);
+	memset(pbuf, 0, 512);
+	// printFormat(format, args);
+	return;
+
 #ifndef DISABLE_LOGGING
 // This copy is only necessary on some architectures (x86) to change a passed
 // array in to a va_list.
@@ -153,6 +164,7 @@ void Logging::print(const char *format, va_list args)
 			printFormat(*format, &args_copy);
 #else
 			printFormat(*format, &args);
+			//printFormat(format, args);
 #endif
 		}
 		else
@@ -166,9 +178,23 @@ void Logging::print(const char *format, va_list args)
 #endif
 }
 
+void Logging::printFormat(const char* format, va_list args)
+{
+	Serial.printf("Logging::printFormat - %s\n", format);
+    va_list ap_copy;
+    va_copy(ap_copy, args);
+    uint32_t len = vsnprintf(NULL, 0, format, ap_copy);
+    va_end(ap_copy);
+
+	char buf[len+1] = {0};
+    vsnprintf(buf, len + 1, format, args);
+	_logOutput->print(buf);
+}
+
 void Logging::printFormat(const char format, va_list *args)
 {
 #ifndef DISABLE_LOGGING
+
 
 	switch (format)
 	{

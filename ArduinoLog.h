@@ -361,6 +361,7 @@ private:
 	}
 
 	void printFormat(const char format, va_list *args);
+	void printFormat(const char *format, va_list args);
 
 	template <class T>
 	void printLevel(int level, bool cr, T msg, ...)
@@ -414,6 +415,8 @@ private:
 
 	printfunction _prefix = NULL;
 	printfunction _suffix = NULL;
+	char pbuf[512] = {0};
+
 #endif
 };
 
